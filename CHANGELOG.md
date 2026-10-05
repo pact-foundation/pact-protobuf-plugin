@@ -1,3 +1,15 @@
+# 0.8.1 - Bugfix Release
+
+* 83d1e57 - fix: include the underlying protox error when proto compilation fails (Ronald Holshausen, Mon Oct 5 11:24:14 2026 +1100)
+* ff92507 - chore(ci): update musl build image to Rust 1.98.0 (Ronald Holshausen, Mon Oct 5 11:37:47 2026 +1100)
+* 724e2c5 - chore: Update dependencies (Ronald Holshausen, Mon Oct 5 11:11:19 2026 +1100)
+* a681a32 - chore(ci): remove stale internal workflow (JP-Ellis, Wed Sep 23 12:06:03 2026 +1000)
+* 2f6195a - test: cover the arrayContains reference form (Stan Vodetskyi, Tue Jul 28 14:33:20 2026 -0700)
+* 69dd790 - fix: attach atLeast/atMost to the collection path on repeated fields (Stan Vodetskyi, Mon Jul 27 16:07:02 2026 -0700)
+* 04751d9 - chore: remove company-specific identifiers from repeated_field_contains fixture (Stan Vodetskyi, Mon Jul 27 17:06:16 2026 -0700)
+* 4fddd11 - feat: support grpc-status-details-bin binary metadata matching (sunnybandlamudi, Fri Jun 5 12:11:48 2026 +0100)
+* e68d7e0 - bump version to 0.8.1 (Ronald Holshausen, Wed May 13 11:20:39 2026 +1000)
+
 # 0.8.0 - Feature Release
 
 * 173bf2f - feat: replace protoc binary with embedded protox compiler (#237) (Ronald Holshausen, Wed May 13 11:00:20 2026 +1000)
