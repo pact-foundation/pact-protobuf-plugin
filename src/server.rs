@@ -760,8 +760,9 @@ impl PactPlugin for ProtobufPactPlugin {
         }))
       }
       Err(err) => {
-        error!("Failed to process protobuf: {}", err);
-        Ok(Self::configure_interaction_error_response(format!("Failed to process protobuf: {}", err)))
+        // Use the alternate format so the full error chain (e.g. the underlying protox error) is included
+        error!("Failed to process protobuf: {:#}", err);
+        Ok(Self::configure_interaction_error_response(format!("Failed to process protobuf: {:#}", err)))
       }
     }
   }
@@ -1279,6 +1280,30 @@ mod tests {
     let response_message = response.get_ref();
     expect!(&response_message.error).to(
       be_equal_to("Config item with key 'pact:message-type' and the protobuf message name or 'pact:proto-service' and the service name is required"));
+  }
+
+  // Issue #238
+  #[tokio::test]
+  async fn configure_interaction_test__includes_the_underlying_compile_error() {
+    let tmp = tempfile::TempDir::new().unwrap();
+    let proto_file = tmp.path().join("invalid.proto");
+    std::fs::write(&proto_file, "edition = \"2023\";\npackage test;\nmessage Test { string name = 1; }\n").unwrap();
+
+    let plugin = ProtobufPactPlugin { manifest: Default::default() };
+    let request = proto::ConfigureInteractionRequest {
+      content_type: "application/protobuf".to_string(),
+      contents_config: Some(prost_types::Struct {
+        fields: btreemap!{
+          "pact:proto".to_string() => prost_types::Value { kind: Some(Kind::StringValue(proto_file.to_string_lossy().to_string())) },
+          "pact:message-type".to_string() => prost_types::Value { kind: Some(Kind::StringValue("Test".to_string())) }
+        }
+      })
+    };
+
+    let response = plugin.configure_interaction(Request::new(request)).await.unwrap();
+    let error = &response.get_ref().error;
+    expect!(error.starts_with("Failed to process protobuf: Failed to compile proto file")).to(be_true());
+    expect!(error.contains("but found 'edition'")).to(be_true());
   }
 
   #[test]
